@@ -1,42 +1,29 @@
 library(shiny)
 library(shinythemes)
 
+library(devtools)
+devtools::install_github("njmurov-ux/lab5apiaccess")
+library(lab5apiaccess)
 
-  # Define UI
-  ui <- fluidPage(theme = shinytheme("paper"),
-    navbarPage(
-      "Shiny App",
-      tabPanel("Main",
-               sidebarPanel(
-                 tags$h3("Input:"),
-                 textInput("txt1", "Given Name:", ""),
-                 textInput("txt2", "Surname:", ""),
-                 
-               ), # sidebarPanel
-               mainPanel(
-                            h1("Header 1"),
-                            
-                            h4("Output 1"),
-                            verbatimTextOutput("txtout"),
 
-               ) # mainPanel
-               
-      ), # Navbar 1, tabPanel
-      tabPanel("About", "This panel is intentionally left blank"),
-   
-  
-    ) # navbarPage
-  ) # fluidPage
+ui <- fluidPage(
+  titlePanel("Stadia Tile Viewer"),
+  imageOutput("tile")
+)
 
-  
-  # Define server function  
-  server <- function(input, output) {
-    
-    output$txtout <- renderText({
-      paste( input$txt1, input$txt2, sep = " " )
-    })
-  } # server
-  
+server <- function(input, output, session) {
+  output$tile <- renderImage({
+    # Save to a temporary file
+    tmpfile <- tempfile(fileext = ".png")
+    stadia_get_tile(
+      12, 654, 1577, style = "outdoors", file = tmpfile
+    )
+    list(
+      src = tmpfile,
+      contentType = "image/png",
+      width = 256, height = 256
+    )
+  }, deleteFile = TRUE)  # delete temp file when done
+}
 
-  # Create Shiny object
-  shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
