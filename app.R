@@ -4,6 +4,8 @@ library(lab5apiaccess)
 
 library(shiny)
 library(shinythemes)
+set_stadia_api_key("645a1c62-4a7d-4ad2-a407-b7e5510009e3")
+
 
 # Convert latitude/longitude to tile coordinates
 latlon_to_tile <- function(lat, lon, zoom) {
